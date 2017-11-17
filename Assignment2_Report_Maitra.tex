@@ -1,0 +1,221 @@
+% Converted from Microsoft Word to LaTeX
+% by Chikrii Softlab Word2TeX converter (version 5.0)
+% Copyright (C) 1999-2011 Chikrii Softlab. All rights reserved.
+% http://www.chikrii.com
+% mailto: support@chikrii.com
+
+% Warning: You are using Chikrii Softlab Word2TeX in TRIAL mode!
+% In TRIAL mode some restrictions will apply.
+% For more information please visit http://www.chikrii.com
+% YOU CAN USE THIS FILE WITH THE SOLE PURPOSE OF EVALUATING Word2TeX.
+
+\documentclass{article}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{listingsutf8}
+\usepackage{url}
+\graphicspath{ {G:/TTU/Fall_17/R/Assignments/Applies/Sayan_tex} }
+
+\begin{document}
+\begin{center}
+		\underline{\textbf{CS5331: ASSIGNMENT 2}}
+\end{center}
+	Replacement of missing data with substitution is called data imputation. In R, there are lots of packages that provides us with the functionality of data imputation. 4 of those packages are: \newline\newline
+	
+	
+\textbf{mice() :} Multivariate Imputation via Chained Equations (MICE) is one of the most commonly used packages in R, for data imputations. The assumption made by MICE is that missing data are Missing at Random (MAR). This means that the probability that a value is missing depends on observed value and can be predicted using them. \newline
+
+\textbf{Mean Imputation :} Mean imputation is the replacement of a missing observation with the mean of the non-missing observations for that variable. In R, this can be done by using the guess():\newline
+
+	$imputedData <- guess(nonimputedData,type = "mean")$
+	\newline\newline
+	
+\textbf{missForest() :} This is a non-parametric imputation method applicable to various variable types. A non-parametric method is such that does not make explicit assumptions about functional form of any arbitrary function, $'f'$. It tries to estimate $'f'$ such that it can be as close to the data points without seeming impractical. It builds a random forest model for each variable. Then it uses the model to predict missing values in the variable with the help of observed values. \newline
+   
+\textbf{k-NN :} knnImputation function fills in all missing values (NA values) using the k Nearest Neighbour of each case. By default, it uses the values of the neighbors and obtains a weighted average of their values to fill in the unknowns. The definition of the function is:\newline
+
+	$knnImputation(data, k = 10, scale = T. meth = “weighAvg”, distData = NULL)$\newline\newline
+	where,\newline
+	data: A data frame with the data set.\newline
+	k: The number of nearest neighbors to use (default value is 10).\newline
+	scale: Boolean setting if the data should be scaled before finding the nearest neighbours (default value = T)\newline
+	meth: String indicating the method used to calculate the value to full in each NA. Available values are ‘median’ or ‘weighAvg’ (default).\newline
+	distData: This is optional; one can provide a data frame containing data set that should be used to find the neighbours.\newline\newline\newline
+	
+	\textbf{OBSERVATIONS -}\newline\newline
+	
+	
+	The function Rmse from the library imputeR was used to calculate the Root mean square error between imputed and true values. A demo for the function is as follows:\newline
+	
+	$Rmse(imp, mis, true, norm = FALSE)$\newline
+	
+Where,\newline\newline
+   imp: the imputed data matrix. In this case, imp contains the dataset after data imputation is done.\newline
+   mis: the missing data matrix. In this case, mis is the dataset containing randomly generated NA values.\newline
+   true: the true data matrix with original values. In this case, true is the original IRIS dataset.\newline\newline
+   
+   Missing values were randomly created to occupy x\% of the data of the iris dataset. The values of x being 2, 5, 10, 15, 20, 25. Then three different data imputation techniques were used: missForest, mean imputation and k-NN imputation. The RMSE between the imputed values and the true values were then calculated. The code snippets and observations recorded are as follows:\newline
+   
+\textbf{missForest:}\newline\newline
+\textbf{Code:}
+	\begin{lstlisting}
+	
+		#missForest
+		imputed_data_Forest <- missForest(demoIris)
+		t <- imputed_data_Forest$ximp
+		
+		#RMSE
+		t1<- Rmse(t,demoIris,iris1,norm=T)
+		t1
+	\end{lstlisting}
+\textbf{Screenshots:}
+\begin{center}
+	\includegraphics{mF2.png}
+	\includegraphics{mF5.png}
+	\includegraphics{mF10.png}
+	\includegraphics{mF15.png}
+	\includegraphics{mF20.png}
+	\includegraphics{mF25.png}
+\end{center}
+\textbf{Observation:}
+	\begin{itemize}
+	\item X = 2\%: 0.1136089
+	\item X = 5\%: 0.1659079
+	\item X = 10\%: 0.1811371
+	\item X = 15\%: 0.1562088
+	\item X = 20\%: 0.1480683
+	\item X = 25\%: 0.225136
+	
+	\end{itemize}
+
+\textbf{Mean Imputation:}\newline\newline
+\textbf{Code:}
+	\begin{lstlisting}
+		#Mean imputation
+		imputed_data_mean <- guess(demoIris,type = "mean")
+		
+		#RMSE
+		idm_val <- Rmse(imputed_data_mean,demoIris,iris1,norm=T)
+		idm_val
+	\end{lstlisting}
+\textbf{Screenshots:}
+\begin{center}
+	\includegraphics{Mean2.png}
+	\includegraphics{mean_5_10_15.png}
+	\includegraphics{mean_20_25.png}
+\end{center}
+\textbf{Observation:}
+
+	\begin{itemize}
+	\item X = 2\%: 0.7275014
+	\item X = 5\%: 0.467586
+	\item X = 10\%: 0.5370794
+	\item X = 15\%: 0.5697217
+	\item X = 20\%: 0.5657178
+	\item X = 25\%: 0.5360939
+
+	
+	\end{itemize}
+
+\textbf{k-NN:}\newline\newline
+\textbf{Code:}
+	\begin{lstlisting}
+		library(DMwR)
+		imputed_data_knn <- knnImputation(demoIris, 4)
+		
+		knnrmse<- Rmse(imputed_data_knn,demoIris,iris1,norm=T)
+		knnrmse
+		
+		imputed_data_knn
+	\end{lstlisting}
+\textbf{Screenshots:}
+\begin{center}
+	\includegraphics{knn_2_5_10.png}
+	\includegraphics{knn_15_20_25.png}
+\end{center}
+\textbf{Observation:}
+\begin{itemize}
+	\item X = 2\%: 0.1382406
+	\item X = 5\%: 0.2636518
+	\item X = 10\%: 0.1835185
+	\item X = 15\%: 0.05377412
+	\item X = 20\%: 0.05075252
+	\item X = 25\%: 0.05510921
+	
+	
+	
+\end{itemize}
+From the above observations, we can see that k-NN imputation method is the most effective method amongst the three methods implemented, when the value of x is high, whereas missForest is more effective when the value of X is lower. We also see that mean imputation is the least accurate data imputation technique. We can also observe that when the amount of missing data is less, the imputations are somewhat less accurate than when the amount of missing data is more.\newline
+\linebreak
+
+We used the function kNN() to find out the supervised classification error. We used the complete iris dataset as the training set and imputed dataset as the test set and recorded the observations. The supervised classification error is computed by the percentage of misclassified instances after applying kNN(). The observations are as follows:
+\linebreak
+
+\textbf{missForest:}
+\linebreak
+
+\begin{itemize}
+	\item 2\% missing values : 2\%
+	\item 5\% missing values : 2.67\%
+	\item 10\% missing values : 1.33\%
+	\item 15\% missing values : 0\%
+	\item 20\% missing values : 0.67\%
+	\item 25\% missing values : 1.33\%
+\end{itemize}
+
+\textbf{Mean:}
+\linebreak
+
+\begin{itemize}
+	\item 2\% missing values : 0\%
+	\item 5\% missing values : 2.66\%
+	\item 10\% missing values : 2.66\%
+	\item 15\% missing values : 4.67\%
+	\item 20\% missing values : 6.67\%
+	\item 25\% missing values : 14.67\%
+\end{itemize}
+
+\textbf{kNN:}
+\linebreak
+
+\begin{itemize}
+	\item 2\% missing values : 0\%
+	\item 5\% missing values : 0\%
+	\item 10\% missing values : 0\%
+	\item 15\% missing values : 2.67\%
+	\item 20\% missing values : 2\%
+	\item 25\% missing values : 2.67\%
+\end{itemize}
+
+The screenshots for the observations are available in Github.
+
+From the observations above, we see that kNN imputation is more effective than the other two methods and mean imputation is the least effective.
+
+Now, the column of $Sepal_Width$ was taken into consideration, and missing values were assigned to those values which were less than 3. Then all the data imputation methods were repeated, and observation was recorded. The code snippet of assignment of missing values and the calculated RMSE values for each function are:
+\textbf{Code:}
+\begin{lstlisting}
+#Changing one columns as NA
+
+iris1 <- iris[,-5]
+demoIris <- iris
+demoIris <- subset(demoIris, select = -c(Species))
+is.na(demoIris$Sepal.Width) = demoIris$Sepal.Width < 3
+\end{lstlisting}
+\textbf{Screenshot}
+\begin{center}
+	\includegraphics{modifiedRMSE.png}
+\end{center}
+\textbf{Observation:}
+\begin{itemize}
+	\item missForest: 2.286875
+	\item Mean Imputation: 3.138137
+	\item k-NN: 2.238799
+\end{itemize}
+We can see from the above observations that, missForest() performs a better than k-NN in this case, whereas mean imputation's performance is lower than the other two. \linebreak
+    
+    \underline{\textbf{REFERENCE}}
+    \linebreak
+	\url{https://github.com/sm2k2010/Data_Imputation}
+	
+
+\end{document}
